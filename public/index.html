@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrowdFix</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+        .tab.active {
+            color: #1f2937;
+            border-bottom: 2px solid #4f46e5;
+        }
+        .admin-status-dropdown {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 sm:p-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6 sm:p-10">
+        <!-- Main Application Container -->
+        <div id="main-app">
+             <header class="text-center mb-8">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">CrowdFix</h1>
+                <p class="mt-2 text-gray-500">Your voice helps make our community better.</p>
+                <div class="mt-4 text-sm text-gray-400">Your User ID: <span id="user-id" class="font-mono">Loading...</span></div>
+            </header>
+            <!-- User Dashboard -->
+            <div id="user-dashboard">
+                <div class="tabs">
+                    <div id="tab-report" class="tab active">Report Issue</div>
+                    <div id="tab-view" class="tab">View Issues</div>
+                </div>
+                <!-- Report Issue Section -->
+                <div id="report-section" class="space-y-6">
+                    <h2 class="text-xl font-semibold text-gray-800">Report a New Issue</h2>
+                    <form id="issueForm" class="space-y-4">
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-700">Description of the Issue</label>
+                            <textarea id="description" name="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border-2" placeholder="e.g., Pothole on main street, broken streetlight near park..." required></textarea>
+                        </div>
+                        <button type="button" id="ai-suggest-btn" class="w-full bg-yellow-400 text-yellow-900 rounded-lg py-2 px-4 font-semibold shadow-md hover:bg-yellow-500 transition-colors">
+                            Get AI Suggestions ✨
+                        </button>
+                        <div id="ai-suggestion-box" class="hidden space-y-4 mt-4 p-4 rounded-lg border-2 border-dashed border-gray-300">
+                             <div class="flex items-center space-x-4">
+                                <div class="flex-1">
+                                    <label for="ai-category" class="block text-sm font-medium text-gray-700">AI Category</label>
+                                    <input type="text" id="ai-category" name="ai-category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border-2 bg-gray-50" readonly>
+                                </div>
+                             </div>
+                             <div>
+                                <label for="ai-summary" class="block text-sm font-medium text-gray-700">AI Summary</label>
+                                <textarea id="ai-summary" name="ai-summary" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border-2 bg-gray-50" readonly></textarea>
+                             </div>
+                        </div>
+                        <div>
+                            <label for="photoUrl" class="block text-sm font-medium text-gray-700">Link to Photo (for demo)</label>
+                            <input type="text" id="photoUrl" name="photoUrl" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border-2" placeholder="Optional: paste image URL here">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Location (Simulated)</label>
+                            <div class="relative mt-1 aspect-video rounded-md overflow-hidden shadow-sm border-2 border-gray-300">
+                                <img src="https://placehold.co/600x400/fff/333?text=Simulated+Map+Location" alt="Simulated Map" class="w-full h-full object-cover">
+                                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full w-4 h-4 ring-2 ring-white"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Note: GPS location is simulated for this demo.</p>
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 text-white rounded-lg py-2 px-4 font-semibold shadow-md hover:bg-indigo-700 transition-colors">
+                            Submit Issue
+                        </button>
+                    </form>
+                </div>
+                <!-- View Issues Section -->
+                <div id="view-section" class="hidden space-y-6">
+                    <h2 class="text-xl font-semibold text-gray-800">Community Reported Issues</h2>
+                    <div id="issues-list" class="space-y-4">
+                        <!-- Issues will be dynamically added here by JavaScript -->
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-end">
+                    <button id="logout-btn" class="text-sm text-gray-600 hover:text-gray-800">Log Out</button>
+                </div>
+            </div>
+            <!-- Admin Dashboard -->
+            <div id="admin-dashboard" class="hidden">
+                 <h2 class="text-2xl font-semibold text-gray-800 mb-4">Admin Dashboard</h2>
+                 <p class="text-sm text-gray-500 mb-6">Manage all reported civic issues.</p>
+                 <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-4">
+                    <input type="text" id="admin-search-box" placeholder="Search issues..." class="flex-1 w-full sm:w-auto p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <select id="admin-sort-select" class="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="createdAt">Sort by Date</option>
+                        <option value="upvotes">Sort by Upvotes</option>
+                    </select>
+                 </div>
+                 <div id="admin-issues-list" class="space-y-4">
+                     <!-- Admin-specific issues will be dynamically added here -->
+                 </div>
+                 <div class="mt-8 flex justify-end">
+                     <button id="admin-logout-btn" class="text-sm text-gray-600 hover:text-gray-800">Log Out</button>
+                 </div>
+            </div>
+        </div>
+        <!-- Modal for feedback -->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <p id="modalMessage" class="text-lg"></p>
+                <button onclick="hideModal()" class="mt-4 bg-gray-200 text-gray-800 rounded-lg px-4 py-2 hover:bg-gray-300 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+    <!-- Admin Login Button/Link -->
+    <a href="#" id="admin-login-link" class="fixed bottom-4 right-4 text-sm text-indigo-600 hover:text-indigo-500 bg-white px-4 py-2 rounded-lg shadow-lg">Admin Login</a>
+    
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content p-8 w-full max-w-sm">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Admin Log In</h2>
+            <form id="admin-login-form" class="space-y-4">
+                <div>
+                    <label for="modal-admin-email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="modal-admin-email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border-2" required>
+                </div>
+                <div>
+                    <label for="modal-admin-password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="modal-admin-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border-2" required>
+                </div>
+                <p id="modal-login-error" class="text-sm text-red-600 hidden text-center"></p>
+                <button type="submit" class="w-full bg-indigo-600 text-white rounded-lg py-2 px-4 font-semibold shadow-md hover:bg-indigo-700 transition-colors">
+                    Log In
+                </button>
+            </form>
+            <button onclick="hideLoginModal()" class="mt-4 text-sm text-gray-600 hover:text-gray-800">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Main application script -->
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>
