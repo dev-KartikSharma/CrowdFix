@@ -1,78 +1,103 @@
 # CrowdFix - Crowdsourced Issue Reporting Webapp
 
+## Table of Contents
+
+- [About](#about)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation & Setup](#installation--setup)
+- [Available Scripts](#available-scripts)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+
+## About
+
 CrowdFix is a modern web application designed to empower citizens by providing a platform to report, track, and prioritize local civic issues. Users can submit problems like potholes, garbage overflow, or streetlight outages, and upvote existing reports to highlight their urgency.
 
 This project leverages the power of AI through the Gemini API to enhance user-submitted content, generate summaries, and draft formal communications, turning simple reports into actionable items for municipal authorities.
 
-## Key Features
+## Features
 
-User Authentication: Secure sign-up and login functionality.
-Issue Reporting: An intuitive form for users to submit detailed reports on civic problems.
-Community Prioritization: Upvote system to help identify the most pressing issues in a community.
-✨ AI-Enhanced Descriptions: Automatically rewrite user descriptions into formal, detailed reports.
-✨ AI-Powered Summaries: Get a high-level overview of all reported issues at the click of a button.
-✨ AI Complaint Drafting: Instantly generate a formal complaint email for any issue, ready to be sent to local authorities.
-
+-   **User Authentication**: Secure sign-up and login functionality.
+-   **Issue Reporting**: An intuitive form for users to submit detailed reports on civic problems.
+-   **Community Prioritization**: Upvote system to help identify the most pressing issues in a community.
+-   ✨ **AI-Enhanced Descriptions**: Automatically rewrite user descriptions into formal, detailed reports.
+-   ✨ **AI-Powered Summaries**: Get a high-level overview of all reported issues at the click of a button.
+-   ✨ **AI Complaint Drafting**: Instantly generate a formal complaint email for any issue, ready to be sent to local authorities.
 
 ## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+-   **Frontend**: React.js
+-   **Styling**: Tailwind CSS
+-   **AI Integration**: Google Gemini API
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Getting Started
 
-### `npm test`
+To get a local copy up and running, follow these simple steps.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
 
-### `npm run build`
+-   Node.js and npm installed on your machine.
+-   A Google Gemini API key.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Installation & Setup
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1.  **Clone the repository:**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    ```bash
+    git clone https://github.com/your-username/crowdfix.git
+    ```
 
-### `npm run eject`
+2.  **Navigate to the project directory:**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+    ```bash
+    cd crowdfix
+    ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+3.  **Install NPM packages:**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    ```bash
+    npm install
+    ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+4.  **Set up your environment variables:**
+    *   Create a `.env` file in the root of the project.
+    *   Add your Gemini API key to the file:
 
-## Learn More
+    ```
+    REACT_APP_GEMINI_API_KEY='your-api-key-here'
+    ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+5.  **Run the application:**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+    ```bash
+    npm start
+    ```
 
-### Code Splitting
+    The application will be available at `http://localhost:3000`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Available Scripts
 
-### Analyzing the Bundle Size
+In the project directory, you can run:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+-   `npm start`
+    Runs the app in the development mode. Open `http://localhost:3000` to view it in your browser. The page will reload when you make changes.
 
-### Making a Progressive Web App
+-   `npm test`
+    Launches the test runner in the interactive watch mode. See the section about running tests for more information.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+-   `npm run build`
+    Builds the app for production to the `build` folder. It correctly bundles React in production mode and optimizes the build for the best performance. Your app is ready to be deployed!
 
-### Advanced Configuration
+## Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+We welcome contributions to CrowdFix! If you'd like to contribute, please follow these steps:
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1.  **Fork the repository.**
+2.  **Create a new branch:** `git checkout -b feature/your-feature-name`
+3.  **Make your changes and commit them:** `git commit -m 'feat: Add your feature'`
+4.  **Push to the branch:** `git push origin feature/your-feature-name`
+5.  **Open a pull request.**
