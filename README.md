@@ -1,12 +1,20 @@
-# Getting Started with Create React App
+# CrowdFix - Crowdsourced Issue Reporting Webapp
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+CrowdFix is a modern web application designed to empower citizens by providing a platform to report, track, and prioritize local civic issues. Users can submit problems like potholes, garbage overflow, or streetlight outages, and upvote existing reports to highlight their urgency.
 
-## Available Scripts
+This project leverages the power of AI through the Gemini API to enhance user-submitted content, generate summaries, and draft formal communications, turning simple reports into actionable items for municipal authorities.
 
-In the project directory, you can run:
+## Key Features
 
-### `npm start`
+User Authentication: Secure sign-up and login functionality.
+Issue Reporting: An intuitive form for users to submit detailed reports on civic problems.
+Community Prioritization: Upvote system to help identify the most pressing issues in a community.
+✨ AI-Enhanced Descriptions: Automatically rewrite user descriptions into formal, detailed reports.
+✨ AI-Powered Summaries: Get a high-level overview of all reported issues at the click of a button.
+✨ AI Complaint Drafting: Instantly generate a formal complaint email for any issue, ready to be sent to local authorities.
+
+
+## Tech Stack
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
