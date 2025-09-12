@@ -4,7 +4,7 @@ export const callGeminiApi = async (prompt, retries = 3, delay = 1000) => {
     // Read the API key from the .env file.
     // Make sure you have a .env file in your root folder with:
     // REACT_APP_GEMINI_API_KEY="your-key-here"
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY; 
+    const apiKey = "AIzaSyDXdononVwMTDPS6HHGNuktLhg7kfE76YU"; 
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
     const payload = {
