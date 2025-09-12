@@ -1,70 +1,158 @@
 import React, { useState } from 'react';
 import { callGeminiApi } from '../services/geminiService.js';
 
-const ReportPage = ({ onAddIssue, user }) => {
+const ReportPage = ({ user, onAddIssue }) => {
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
     const [address, setAddress] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [isEnhancing, setIsEnhancing] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!category || !description || !address) return;
-        const newIssue = {
-            id: 'id-' + Math.random(),
-            reporterEmail: user.email,
-            category,
-            description,
-            address,
-            upvotes: 0,
-            status: 'submitted',
-            timestamp: new Date()
-        };
-        onAddIssue(newIssue);
-        setCategory(''); setDescription(''); setAddress('');
-        alert("Issue reported successfully!");
+        setError('');
+        setSuccess('');
+
+        if (!category || !description) {
+            setError("Category and description are required.");
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const newIssueData = {
+                category,
+                description,
+                address,
+                reporter: user.username, // Pass the logged-in user's username
+                upvotes: 0,
+                status: "submitted",
+                timestamp: new Date(),
+            };
+
+            const response = await fetch('http://localhost:8000/api/issues', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newIssueData),
+            });
+
+            if (!response.ok) {
+                // Try to parse error response
+                let errorMessage = "Failed to submit the issue.";
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.detail || errorMessage;
+                } catch {
+                    const textError = await response.text();
+                    if (textError) errorMessage = textError;
+                }
+                throw new Error(errorMessage);
+            }
+
+            // Try to parse success response safely
+            let data = null;
+            try {
+                data = await response.json();
+            } catch {
+                data = { message: await response.text() };
+            }
+
+            setSuccess(data.message || "Issue reported successfully! Redirecting...");
+
+            // Notify parent App with the new issue
+            setTimeout(() => {
+                onAddIssue(newIssueData);
+            }, 2000);
+
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
     };
-    
+
     const handleEnhanceDescription = async () => {
         if (!description) {
-            alert("Please enter a description first.");
+            setError("Please enter a description first.");
             return;
         }
         setIsEnhancing(true);
+        setError('');
         const prompt = `Rewrite and enhance the following civic issue description to be more clear, formal, and detailed for an official government report. Do not add any new facts, just improve the language and structure. Original description: "${description}"`;
-        const enhancedDescription = await callGeminiApi(prompt);
-        setDescription(enhancedDescription);
-        setIsEnhancing(false);
+        try {
+            const enhancedDescription = await callGeminiApi(prompt);
+            setDescription(enhancedDescription);
+        } catch (apiError) {
+            setError('Failed to enhance description with AI.');
+        } finally {
+            setIsEnhancing(false);
+        }
     };
 
     return (
-         <div className="bg-gray-800 rounded-lg shadow p-8">
+        <div className="bg-gray-800 rounded-lg shadow p-8">
             <h2 className="text-3xl font-bold text-white mb-6">Report a Civic Issue</h2>
-             <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                     <label htmlFor="category" className="block text-sm font-medium text-gray-300">Issue Category *</label>
-                    <select id="category" required value={category} onChange={e => setCategory(e.target.value)} className="mt-1 block w-full px-3 py-2 bg-gray-700 border-gray-600 rounded-md shadow-sm text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <select 
+                        id="category" 
+                        required 
+                        value={category} 
+                        onChange={e => setCategory(e.target.value)} 
+                        className="mt-1 block w-full px-3 py-2 bg-gray-700 border-gray-600 rounded-md shadow-sm text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    >
                         <option value="">Select a category</option>
-                        <option value="pothole">Pothole</option>
-                        <option value="garbage">Garbage Dump</option>
-                        <option value="streetlight-outage">Streetlight Outage</option>
-                        <option value="other">Other</option>
+                        <option value="Pothole">Pothole</option>
+                        <option value="Garbage">Garbage Dump</option>
+                        <option value="Streetlight Outage">Streetlight Outage</option>
+                        <option value="Other">Other</option>
                     </select>
                 </div>
-                 <div>
+                <div>
                     <label htmlFor="description" className="block text-sm font-medium text-gray-300">Description *</label>
-                    <textarea id="description" rows="4" required value={description} onChange={e => setDescription(e.target.value)} placeholder="Provide a detailed description..." className="mt-1 block w-full px-3 py-2 bg-gray-700 border-gray-600 rounded-md shadow-sm text-white focus:outline-none focus:ring-indigo-500"></textarea>
-                    <button type="button" onClick={handleEnhanceDescription} disabled={isEnhancing} className="mt-2 w-full text-sm text-indigo-400 hover:text-indigo-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <textarea 
+                        id="description" 
+                        rows="4" 
+                        required 
+                        value={description} 
+                        onChange={e => setDescription(e.target.value)} 
+                        placeholder="Provide a detailed description..." 
+                        className="mt-1 block w-full px-3 py-2 bg-gray-700 border-gray-600 rounded-md shadow-sm text-white focus:outline-none focus:ring-indigo-500"
+                    ></textarea>
+                    <button 
+                        type="button" 
+                        onClick={handleEnhanceDescription} 
+                        disabled={isEnhancing || isLoading} 
+                        className="mt-2 w-full text-sm text-indigo-400 hover:text-indigo-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                         {isEnhancing ? 'Enhancing...' : '✨ Enhance Description with AI'}
                     </button>
                 </div>
                 <div>
-                    <label htmlFor="address" className="block text-sm font-medium text-gray-300">Address / Landmark *</label>
-                    <input id="address" type="text" required value={address} onChange={e => setAddress(e.target.value)} placeholder="e.g., Near City Park" className="mt-1 block w-full px-3 py-2 bg-gray-700 border-gray-600 rounded-md shadow-sm text-white focus:outline-none focus:ring-indigo-500"/>
+                    <label htmlFor="address" className="block text-sm font-medium text-gray-300">Address / Landmark</label>
+                    <input 
+                        id="address" 
+                        type="text" 
+                        value={address} 
+                        onChange={e => setAddress(e.target.value)} 
+                        placeholder="e.g., Near City Park" 
+                        className="mt-1 block w-full px-3 py-2 bg-gray-700 border-gray-600 rounded-md shadow-sm text-white focus:outline-none focus:ring-indigo-500"
+                    />
                 </div>
-                 <div className="flex justify-end pt-4">
-                    <button type="submit" className="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">
-                        Submit Report
+                
+                {error && <p className="text-sm text-red-400 text-center">{error}</p>}
+                {success && <p className="text-sm text-green-400 text-center">{success}</p>}
+
+                <div className="flex justify-end pt-4">
+                    <button 
+                        type="submit" 
+                        disabled={isLoading} 
+                        className="inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400"
+                    >
+                        {isLoading ? 'Submitting...' : 'Submit Report'}
                     </button>
                 </div>
             </form>
@@ -73,4 +161,3 @@ const ReportPage = ({ onAddIssue, user }) => {
 };
 
 export default ReportPage;
-
