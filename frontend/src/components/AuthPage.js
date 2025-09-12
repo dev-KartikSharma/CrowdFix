@@ -7,21 +7,65 @@ const AuthPage = ({ onLogin }) => {
     const [password, setPassword] = useState('password');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false); // For loading state
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); 
+        setError('');
 
         if (isLogin) {
+            // Placeholder for login logic
             if (email && password) onLogin({ email });
             else setError("Please enter email and password.");
         } else {
+            // --- SIGNUP LOGIC ---
             if (password !== confirmPassword) {
                 setError("Passwords do not match.");
                 return;
             }
-            if (username && email && password) onLogin({ email, username });
-            else setError("Please fill out all fields.");
+            if (!username || !email || !password) {
+                setError("Please fill out all fields.");
+                return;
+            }
+
+            setIsLoading(true);
+
+            try {
+                // Prepare the data to send to the backend
+                const signupData = {
+                    username,
+                    email,
+                    password,
+                };
+
+                // Use fetch to send a POST request to your FastAPI backend
+                const response = await fetch('http://localhost:8000/api/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(signupData),
+                });
+
+                if (!response.ok) {
+                    // Handle server-side errors
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Something went wrong');
+                }
+
+                // If signup is successful, log the response and proceed
+                const result = await response.json();
+                console.log('Backend response:', result.message);
+                
+                // Simulate login after successful signup
+                onLogin({ email, username });
+
+            } catch (err) {
+                console.error("Signup error:", err);
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
         }
     };
 
@@ -59,8 +103,8 @@ const AuthPage = ({ onLogin }) => {
                     )}
                      {error && <p className="text-sm text-red-400 text-center">{error}</p>}
                     <div>
-                        <button type="submit" className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {isLogin ? "Sign In" : "Create Account"}
+                        <button type="submit" disabled={isLoading} className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400">
+                            {isLoading ? 'Processing...' : (isLogin ? "Sign In" : "Create Account")}
                         </button>
                     </div>
                 </form>
@@ -76,3 +120,4 @@ const AuthPage = ({ onLogin }) => {
 };
 
 export default AuthPage;
+
