@@ -26,12 +26,12 @@ const ReportPage = ({ user, onAddIssue }) => {
                 category,
                 description,
                 address,
-                reporter: user.username, // Pass the logged-in user's username
+                reporter: user.email, 
                 upvotes: 0,
                 status: "submitted",
                 timestamp: new Date(),
             };
-
+            console.log("Submitting new issue:", newIssueData);
             const response = await fetch('http://localhost:8000/api/issues', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -39,7 +39,7 @@ const ReportPage = ({ user, onAddIssue }) => {
             });
 
             if (!response.ok) {
-                // Try to parse error response
+                
                 let errorMessage = "Failed to submit the issue.";
                 try {
                     const errorData = await response.json();
@@ -51,7 +51,6 @@ const ReportPage = ({ user, onAddIssue }) => {
                 throw new Error(errorMessage);
             }
 
-            // Try to parse success response safely
             let data = null;
             try {
                 data = await response.json();
@@ -61,7 +60,7 @@ const ReportPage = ({ user, onAddIssue }) => {
 
             setSuccess(data.message || "Issue reported successfully! Redirecting...");
 
-            // Notify parent App with the new issue
+            
             setTimeout(() => {
                 onAddIssue(newIssueData);
             }, 2000);
@@ -92,17 +91,17 @@ const ReportPage = ({ user, onAddIssue }) => {
     };
 
     return (
-        <div className="bg-gray-800 rounded-lg shadow p-8">
-            <h2 className="text-3xl font-bold text-white mb-6">Report a Civic Issue</h2>
+        <div className="bg-white border-2 rounded-lg shadow-lg p-8">
+            <h2 className="text-3xl font-bold text-gray-800 mb-6">Report a Civic Issue</h2>
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <label htmlFor="category" className="block text-sm font-medium text-gray-300">Issue Category *</label>
+                    <label htmlFor="category" className="block text-sm font-medium text-gray-700">Issue Category *</label>
                     <select 
                         id="category" 
                         required 
                         value={category} 
                         onChange={e => setCategory(e.target.value)} 
-                        className="mt-1 block w-full px-3 py-2 bg-gray-700 border-gray-600 rounded-md shadow-sm text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-black focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         <option value="">Select a category</option>
                         <option value="Pothole">Pothole</option>
@@ -112,7 +111,7 @@ const ReportPage = ({ user, onAddIssue }) => {
                     </select>
                 </div>
                 <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-300">Description *</label>
+                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description *</label>
                     <textarea 
                         id="description" 
                         rows="4" 
@@ -120,31 +119,31 @@ const ReportPage = ({ user, onAddIssue }) => {
                         value={description} 
                         onChange={e => setDescription(e.target.value)} 
                         placeholder="Provide a detailed description..." 
-                        className="mt-1 block w-full px-3 py-2 bg-gray-700 border-gray-600 rounded-md shadow-sm text-white focus:outline-none focus:ring-indigo-500"
+                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-black focus:outline-none focus:ring-indigo-500"
                     ></textarea>
                     <button 
                         type="button" 
                         onClick={handleEnhanceDescription} 
                         disabled={isEnhancing || isLoading} 
-                        className="mt-2 w-full text-sm text-indigo-400 hover:text-indigo-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="mt-2 w-full text-sm text-indigo-600 hover:text-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isEnhancing ? 'Enhancing...' : '✨ Enhance Description with AI'}
                     </button>
                 </div>
                 <div>
-                    <label htmlFor="address" className="block text-sm font-medium text-gray-300">Address / Landmark</label>
+                    <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address / Landmark</label>
                     <input 
                         id="address" 
                         type="text" 
                         value={address} 
                         onChange={e => setAddress(e.target.value)} 
                         placeholder="e.g., Near City Park" 
-                        className="mt-1 block w-full px-3 py-2 bg-gray-700 border-gray-600 rounded-md shadow-sm text-white focus:outline-none focus:ring-indigo-500"
+                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-black focus:outline-none focus:ring-indigo-500"
                     />
                 </div>
                 
-                {error && <p className="text-sm text-red-400 text-center">{error}</p>}
-                {success && <p className="text-sm text-green-400 text-center">{success}</p>}
+                {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+                {success && <p className="text-sm text-green-600 text-center">{success}</p>}
 
                 <div className="flex justify-end pt-4">
                     <button 
@@ -161,3 +160,4 @@ const ReportPage = ({ user, onAddIssue }) => {
 };
 
 export default ReportPage;
+
